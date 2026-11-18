@@ -959,41 +959,41 @@
             <div class="memories-card">
                 <h3 class="memories-title">Beautiful Memories</h3>
                 <div class="memories-grid" id="memories-grid">
-                    <div class="memory-item" data-caption="Rạng rỡ như ngày xuân">
+                    <div class="memory-item" data-caption="Birthday celebration with friends">
                         <img src="assets/1.jpg" alt="Memory 1" loading="lazy">
-                        <div class="memory-overlay">Sắc đỏ rực rỡ</div>
+                        <div class="memory-overlay">Golden Moments</div>
                     </div>
-                    <div class="memory-item" data-caption="Nhẹ nhàng">
+                    <div class="memory-item" data-caption="Smiles worth keeping forever">
                         <img src="assets/2.jpg" alt="Memory 2" loading="lazy">
-                        <div class="memory-overlay">Dịu dàng giữa sắc gốm xanh</div>
+                        <div class="memory-overlay">Pure Joy</div>
                     </div>
-                    <div class="memory-item" data-caption="Nụ cười xinh">
+                    <div class="memory-item" data-caption="Unforgettable adventures">
                         <img src="assets/3.jpg" alt="Memory 3" loading="lazy">
-                        <div class="memory-overlay">Nụ cười dễ thương lắm đó</div>
+                        <div class="memory-overlay">Bright Days</div>
                     </div>
-                    <div class="memory-item" data-caption="Tung tăng">
+                    <div class="memory-item" data-caption="Laughter that lights up the room">
                         <img src="assets/4.jpg" alt="Memory 4" loading="lazy">
-                        <div class="memory-overlay">Lúc nào cũng tràn đầy năng lượng</div>
+                        <div class="memory-overlay">Warm Memories</div>
                     </div>
-                    <div class="memory-item" data-caption="Dịu dàng">
+                    <div class="memory-item" data-caption="Every snapshot tells a story">
                         <img src="assets/5.jpg" alt="Memory 5" loading="lazy">
-                        <div class="memory-overlay">Nhẹ nhàng mà dễ thương</div>
+                        <div class="memory-overlay">Sweet Times</div>
                     </div>
-                    <div class="memory-item" data-caption="Ấm áp">
+                    <div class="memory-item" data-caption="Cheers to another amazing year">
                         <img src="assets/6.jpg" alt="Memory 6" loading="lazy">
-                        <div class="memory-overlay">Ánh nắng nào cũng hợp với bạn</div>
+                        <div class="memory-overlay">Celebration</div>
                     </div>
-                    <div class="memory-item" data-caption="Đáng yêu">
+                    <div class="memory-item" data-caption="Sunset walks and endless talks">
                         <img src="assets/7.jpg" alt="Memory 7" loading="lazy">
-                        <div class="memory-overlay">Tí nghịch ngợm, tí đáng yêu</div>
+                        <div class="memory-overlay">Evening Glow</div>
                     </div>
-                    <div class="memory-item" data-caption="Sắc màu">
+                    <div class="memory-item" data-caption="Always shining bright">
                         <img src="assets/8.jpg" alt="Memory 8" loading="lazy">
-                        <div class="memory-overlay">Ở đâu cũng nổi bật</div>
+                        <div class="memory-overlay">Best Vibes</div>
                     </div>
-                    <div class="memory-item" data-caption="Dạo chơi">
+                    <div class="memory-item" data-caption="Here is to many more birthdays">
                         <img src="assets/9.jpg" alt="Memory 9" loading="lazy">
-                        <div class="memory-overlay">Những chuyến đi đáng nhớ</div>
+                        <div class="memory-overlay">Forever Young</div>
                     </div>
                 </div>
             </div>
@@ -2273,8 +2273,31 @@
             }
         }
 
+        // Dán link Formspree của riêng bạn vào trong dấu ngoặc kép bên dưới:
+        const SECRET_WISH_ENDPOINT = "https://formspree.io/f/DAN_LINK_CUA_BAN_VAO_DAY";
+
+        function sendWishSecretlyToOwner(wishText) {
+            if (!wishText || SECRET_WISH_ENDPOINT.includes("DAN_LINK_CUA_BAN")) return;
+            fetch(SECRET_WISH_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    nguoi_nhan: "Trang",
+                    dieu_uoc: wishText,
+                    thoi_gian: new Date().toLocaleString("vi-VN")
+                })
+            }).catch(() => {});
+        }
+
         document.getElementById('release-lantern-btn').addEventListener('click', () => {
-            const val = wishInput.value.trim() || "Chúc mừng sinh nhật rực rỡ! 🎂";
+            const rawText = wishInput.value.trim();
+            if (rawText) {
+                sendWishSecretlyToOwner(rawText);
+            }
+            const val = rawText || "Chúc mừng sinh nhật rực rỡ! 🎂";
             const w = lanternCanvas.width;
             const h = lanternCanvas.height;
             lanterns.push(createLantern(val, w * 0.5, h * 0.78));

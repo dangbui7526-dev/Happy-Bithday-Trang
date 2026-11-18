@@ -862,9 +862,25 @@
         }
 
         @media (max-width: 640px) {
+            .top-nav {
+                padding: 14px 16px;
+                justify-content: flex-start;
+            }
+            .music-toggle-btn {
+                top: 14px;
+                right: 16px;
+            }
+            .hero-garden {
+                align-items: flex-start;
+                padding-top: 86px;
+            }
             .hero-text-block {
-                margin-left: 7%;
-                margin-top: -32vh;
+                margin-left: 6%;
+                margin-right: 6%;
+                margin-top: 0;
+            }
+            .hero-heading {
+                font-size: clamp(2.35rem, 10vw, 3.1rem);
             }
             .memories-grid {
                 gap: 8px;
@@ -1846,28 +1862,33 @@
                 ctx.clearRect(0, 0, W, H);
                 time += 0.024;
 
-                // Responsive tree placement (right side on desktop, center-bottom on mobile)
+                // Tính tỷ lệ chuẩn theo khung hình để tán cây trái tim và cành luôn cân đối 100% trên cả điện thoại lẫn laptop
                 const isMobile = W < 640;
-                const baseX = isMobile ? W * 0.52 : W * 0.68;
-                const baseY = H * 0.95;
-                const treeHeight = isMobile ? H * 0.44 : H * 0.56;
-                const canopyScale = isMobile ? Math.min(W, H) * 0.0185 : Math.min(W, H) * 0.0205;
-                const breeze = Math.sin(time * 1.15) * 7.5;
+                const baseX = isMobile ? W * 0.50 : W * 0.68;
+                const baseY = isMobile ? H * 0.87 : H * 0.95;
+                const treeHeight = isMobile ? H * 0.34 : H * 0.56;
+                // Tán trái tim rộng ~33 * canopyScale: trên mobile lấy theo chiều rộng màn hình (W) để tán nở to, tròn đầy
+                const canopyScale = isMobile
+                    ? Math.min(W * 0.0245, H * 0.0145)
+                    : Math.min(W * 0.0165, H * 0.0215);
+                const branchSpread = canopyScale / 13.5; // Hệ số co giãn cành khớp tuyệt đối với bán kính tán lá
+                const breeze = Math.sin(time * 1.15) * (isMobile ? 4.5 : 7.5);
 
                 // 0. Soft Ground Shadow beneath the tree
                 if (growthState.trunk > 0.1) {
                     ctx.save();
-                    const shadowGrad = ctx.createRadialGradient(baseX, baseY, 8, baseX, baseY, isMobile ? 110 : 165);
+                    const shadowRx = isMobile ? W * 0.24 : 165;
+                    const shadowGrad = ctx.createRadialGradient(baseX, baseY, 6, baseX, baseY, shadowRx);
                     shadowGrad.addColorStop(0, 'rgba(135, 55, 70, 0.22)');
                     shadowGrad.addColorStop(1, 'rgba(135, 55, 70, 0)');
                     ctx.fillStyle = shadowGrad;
                     ctx.beginPath();
-                    ctx.ellipse(baseX, baseY, (isMobile ? 110 : 165) * growthState.trunk, 18 * growthState.trunk, 0, 0, Math.PI * 2);
+                    ctx.ellipse(baseX, baseY, shadowRx * growthState.trunk, 15 * growthState.trunk, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.restore();
                 }
 
-                // 1. Draw Thick Tapered Wood Trunk & Multi-tier Organic Branches
+                // 1. Draw Thick Tapered Wood Trunk & Multi-tier Organic Branches (luôn nằm gọn bên trong tán lá)
                 if (growthState.trunk > 0) {
                     const p = growthState.trunk;
                     ctx.save();
@@ -1884,8 +1905,8 @@
 
                     // Thân cây chính uốn lượn tự nhiên và thon dần lên ngọn
                     ctx.fillStyle = trunkGrad;
-                    const baseHalfW = isMobile ? 14 : 19;
-                    const topHalfW = isMobile ? 4.5 : 6;
+                    const baseHalfW = isMobile ? 12 : 19;
+                    const topHalfW = isMobile ? 3.5 : 6;
                     ctx.beginPath();
                     ctx.moveTo(baseX - baseHalfW, baseY);
                     ctx.quadraticCurveTo(baseX - baseHalfW * 0.85, baseY - treeHeight * 0.52 * p, topX - topHalfW, topY);
@@ -1894,25 +1915,25 @@
                     ctx.closePath();
                     ctx.fill();
 
-                    // Hệ thống cành cấp 1 và cành nhánh vươn rộng nâng đỡ tán trái tim
+                    // Hệ thống cành nâng đỡ tán trái tim (tọa độ tính theo branchSpread nên không bao giờ chọc ra ngoài lá)
                     if (p > 0.38) {
                         const bp = (p - 0.38) / 0.62;
                         ctx.strokeStyle = trunkGrad;
 
                         const branches = [
-                            { sx: 0.48, ex: -125, ey: -125, w: isMobile ? 7.5 : 10 },
-                            { sx: 0.52, ex: 120,  ey: -120, w: isMobile ? 7.5 : 10 },
-                            { sx: 0.66, ex: -85,  ey: -155, w: isMobile ? 6 : 8 },
-                            { sx: 0.70, ex: 88,   ey: -150, w: isMobile ? 6 : 8 },
-                            { sx: 0.82, ex: -42,  ey: -155, w: isMobile ? 4.5 : 6 },
-                            { sx: 0.84, ex: 45,   ey: -152, w: isMobile ? 4.5 : 6 },
-                            { sx: 0.92, ex: 0,    ey: -145, w: isMobile ? 4 : 5.5 }
+                            { sx: 0.58, ex: -95 * branchSpread, ey: -82 * branchSpread, w: isMobile ? 5.5 : 9.5 },
+                            { sx: 0.60, ex: 95 * branchSpread,  ey: -80 * branchSpread, w: isMobile ? 5.5 : 9.5 },
+                            { sx: 0.72, ex: -68 * branchSpread, ey: -102 * branchSpread, w: isMobile ? 4.5 : 7.5 },
+                            { sx: 0.74, ex: 68 * branchSpread,  ey: -100 * branchSpread, w: isMobile ? 4.5 : 7.5 },
+                            { sx: 0.85, ex: -34 * branchSpread, ey: -98 * branchSpread, w: isMobile ? 3.5 : 5.5 },
+                            { sx: 0.86, ex: 34 * branchSpread,  ey: -96 * branchSpread, w: isMobile ? 3.5 : 5.5 },
+                            { sx: 0.92, ex: 0,                  ey: -75 * branchSpread, w: isMobile ? 3 : 5 }
                         ];
 
                         branches.forEach(b => {
                             const startX = baseX + breeze * 0.28;
                             const startY = baseY - treeHeight * b.sx * p;
-                            const endX = startX + (b.ex + breeze * 0.9) * bp;
+                            const endX = startX + (b.ex + breeze * 0.75) * bp;
                             const endY = startY + b.ey * bp;
 
                             ctx.lineWidth = b.w;
@@ -1951,12 +1972,13 @@
                     ctx.fill();
                     ctx.restore();
 
+                    const leafScaleFactor = isMobile ? 0.82 : 1;
                     canopyLeaves.forEach(leaf => {
                         const localProgress = Math.max(0, Math.min(1, (growthState.leaves - leaf.delay * 0.45) * 1.45));
                         if (localProgress <= 0) return;
 
-                        const swayX = Math.sin(time + leaf.swayPhase) * (2.5 + leaf.r * 2.2);
-                        const swayY = Math.cos(time * 0.9 + leaf.swayPhase) * 1.2;
+                        const swayX = Math.sin(time + leaf.swayPhase) * ((isMobile ? 1.6 : 2.5) + leaf.r * 1.8);
+                        const swayY = Math.cos(time * 0.9 + leaf.swayPhase) * 1.0;
                         const lx = crownCenterX + leaf.hx * canopyScale + swayX;
                         const ly = crownCenterY + leaf.hy * canopyScale + swayY;
 
@@ -1964,7 +1986,7 @@
                             ctx,
                             lx,
                             ly,
-                            leaf.size * localProgress,
+                            leaf.size * leafScaleFactor * localProgress,
                             leaf.angle + Math.sin(time + leaf.swayPhase) * 0.12,
                             leaf.color,
                             0.97

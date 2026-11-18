@@ -1327,38 +1327,6 @@
         });
 
         /* ============================================================================
-           3. SEQUENCE 2: CRIMSON EXPLOSION & FULLSCREEN CURTAIN TRANSITION
-           ============================================================================ */
-        function triggerHeartExplosionAndCurtain() {
-            const targetX = window.innerWidth * 0.5;
-            const targetY = window.innerHeight * 0.34;
-
-            // Kích hoạt phát nhạc ngay khoảnh khắc mũi tên bắn trúng & làm nổ trái tim!
-            playBirthdayMusic();
-
-            // Spawn crimson & gold impact burst
-            spawnFireworkBurst(targetX, targetY, ['#ff3366', '#ff85a1', '#ffd166', '#ffffff'], 90);
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
-
-            function animateBg() {
-                requestAnimationFrame(animateBg);
-                const arr = points.geometry.attributes.position.array;
-                for (let i = 0; i < count; i++) {
-                    arr[i * 3 + 1] += speeds[i];
-                    if (arr[i * 3 + 1] > 9) arr[i * 3 + 1] = -9;
-                }
-                points.geometry.attributes.position.needsUpdate = true;
-                points.rotation.y += 0.0008;
-                renderer.render(scene, camera);
-            }
-            animateBg();
-        }
-
-        /* ============================================================================
            2. PHYSICS-BASED CUPID BOW & ARROW INTERACTION (SEQUENCE 1 -> 2 -> 3)
            ============================================================================ */
         function initCupidBow() {
